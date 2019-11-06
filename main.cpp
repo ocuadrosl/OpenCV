@@ -12,19 +12,40 @@ int main()
 
     cv::Mat image; //n-dimensional dense array class
 
-    image = cv::imread(fileName, cv::IMREAD_COLOR);
+    image = cv::imread(fileName);
 
     if ( !image.data )
     {
         std::cerr<<"No image data"<<std::endl;
         return -1;
     }
-    cv::namedWindow("Display Image", cv::WINDOW_AUTOSIZE);
 
-    cv::imshow("Display Image", image);
+
+    //RGB to Lab color space
+
+    cv::Mat lab;
+    cv::cvtColor(image, lab, cv::COLOR_BGR2Lab);
+
+    std::vector<cv::Mat> labChannels(3);
+    cv::split(lab, labChannels);
+
+    for(unsigned i=0;i<labChannels.size();++i)
+    {
+        labChannels[0] -= 50;
+
+    }
+
+    cv::Mat output;
+    cv::merge(labChannels, lab);
+
+
+    cv::cvtColor(lab, output, cv::COLOR_Lab2BGR);
+
+
+    cv::imshow("Input Image", image);
+    cv::imshow("Output Image", output);
 
     cv::waitKey(0);
-
 
     return 0;
 }
